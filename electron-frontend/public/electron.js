@@ -6,9 +6,8 @@ const { app, shell, BrowserWindow, protocol, ipcMain } = require("electron");
 const { createURLRoute } = require("electron-router-dom");
 const path = require("path");
 const url = require("url");
-const fs = require('fs');
-const mkfifo = require("mkfifo");
-
+const fs = require("fs");
+// const mkfifo = require("mkfifo");
 
 // Create the native browser window.
 function createWindow(id, options) {
@@ -18,9 +17,9 @@ function createWindow(id, options) {
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       nodeIntegration: true,
-      contextIsolation: true
+      contextIsolation: true,
     },
-    ...options
+    ...options,
     // Set the path of an additional "preload" script that can be used to
     // communicate between node-land and browser-land.
   });
@@ -42,7 +41,7 @@ function createWindow(id, options) {
     window.webContents.openDevTools();
   }
 
-  window.webContents.on("new-window", function(event, url) {
+  window.webContents.on("new-window", function (event, url) {
     event.preventDefault();
     shell.openExternal(url);
   });
@@ -66,40 +65,40 @@ function setupLocalFilesNormalizerProxy() {
 // This method will be called when Electron has finished its initialization and
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {  
+app.whenReady().then(() => {
   // Set global window variable to be the MAIN screen
-  createWindow('main', {
-      title: "Controls",
-      // uncomment when done with development
-      // frame: false
+  createWindow("main", {
+    title: "Controls",
+    // uncomment when done with development
+    // frame: false
   });
 
   let whisperProcess = createWhisperProcess();
-  console.log(whisperProcess)
+  console.log(whisperProcess);
 
   ipcMain.on("send-audio-data", (event, data) => {
-    console.log("sending audio to whisper", data)
+    console.log("sending audio to whisper", data);
     // send data to whisper process
     whisperProcess.stdout.pipe(process.stdout);
     whisperProcess.stdin.write(data);
     // Send a message to the child process to stop the while loop
-    const message = 'stop';
-    fs.appendFileSync('electron', message);
+    const message = "stop";
+    // fs.appendFileSync('electron', message);
     whisperProcess.stdin.end();
-  })
+  });
 
-  createWindow('subtitles', {
+  createWindow("subtitles", {
     width: 450,
     height: 350,
     title: "Subtitles",
     // uncomment when done with development
     // frame: false
-  })
-  createWindow('settings', {
+  });
+  createWindow("settings", {
     width: 450,
     height: 350,
-    title: "Settings"
-  })
+    title: "Settings",
+  });
   setupLocalFilesNormalizerProxy();
 
   app.on("activate", function () {
@@ -110,7 +109,6 @@ app.whenReady().then(() => {
     }
   });
 });
-
 
 // Quit when all windows are closed, except on macOS.
 // There, it's common for applications and their menu bar to stay active until
@@ -140,34 +138,41 @@ app.on("web-contents-created", (event, contents) => {
 
 // TODO: Can add some parameters for this function to allow configurations
 const createWhisperProcess = () => {
-  const command = './public/whisper/command';
-  const args = ['-m', './public/whisper/models/ggml-base.bin', '-t', '8', '-c', '0'];
+  const command = "./public/whisper/command";
+  const args = [
+    "-m",
+    "./public/whisper/models/ggml-base.bin",
+    "-t",
+    "8",
+    "-c",
+    "0",
+  ];
   const whisperProcess = spawn(command, args);
   // on sending data to child process
-  whisperProcess.stdin.on('data', (data) => {
+  whisperProcess.stdin.on("data", (data) => {
     console.log(`stdin: ${data}`);
   });
 
   // Print any error
-  whisperProcess.stderr.on('data', (data) => {
+  whisperProcess.stderr.on("data", (data) => {
     console.error(`stderr: ${data}`);
   });
 
   // Handle data received from child process stdout
-  whisperProcess.stdout.on('data', (data) => {
+  whisperProcess.stdout.on("data", (data) => {
     const receivedData = data.toString();
-    console.log(`stdout: ${receivedData}`)
+    console.log(`stdout: ${receivedData}`);
   });
-  
-  // Create the named pipe (FIFO)
-  mkfifo.mkfifoSync("electron", 0o600);
+
+  // // Create the named pipe (FIFO)
+  // mkfifo.mkfifoSync("electron", 0o600);
 
   // Handle child process exit
-  whisperProcess.on('exit', (code, signal) => {
-    console.log('Child process exited with code:', code);
+  whisperProcess.on("exit", (code, signal) => {
+    console.log("Child process exited with code:", code);
     // Remove the named pipe (FIFO)
-    fs.unlinkSync('electron');
+    // fs.unlinkSync('electron');
   });
 
-  return whisperProcess
-}
+  return whisperProcess;
+};

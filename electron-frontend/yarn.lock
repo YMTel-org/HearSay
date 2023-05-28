@@ -7279,13 +7279,6 @@ mkdirp@~0.5.1:
   dependencies:
     minimist "^1.2.6"
 
-mkfifo@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/mkfifo/-/mkfifo-2.1.0.tgz#25692e1fd6066f7b9de80f22de762cabf0a5ffc6"
-  integrity sha512-DWKm/Mrx3WbZGTDh3lMGNiKyOzPkG5+97Y1tdlrjDBpe0PHa0iWI9Rt68g3Ar/jOk2wU1EQuYnwX8Nv3QRsMJQ==
-  dependencies:
-    node-addon-api "^1.6.3"
-
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
