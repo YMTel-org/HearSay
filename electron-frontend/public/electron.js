@@ -7,6 +7,7 @@ const { createURLRoute } = require("electron-router-dom");
 const path = require("path");
 const url = require("url");
 const fs = require("fs");
+
 // const mkfifo = require("mkfifo");
 
 // Create the native browser window.
@@ -69,31 +70,37 @@ app.whenReady().then(() => {
   // Set global window variable to be the MAIN screen
   createWindow("main", {
     title: "Controls",
+    height: 180,
+    width: 800,
     // uncomment when done with development
     // frame: false
   });
 
-  let whisperProcess = createWhisperProcess();
-  console.log(whisperProcess);
+  // let whisperProcess = createWhisperProcess();
+  // console.log(whisperProcess);
 
-  ipcMain.on("send-audio-data", (event, data) => {
-    console.log("sending audio to whisper", data);
-    // send data to whisper process
-    whisperProcess.stdout.pipe(process.stdout);
-    whisperProcess.stdin.write(data);
-    // Send a message to the child process to stop the while loop
-    const message = "stop";
-    // fs.appendFileSync('electron', message);
-    whisperProcess.stdin.end();
-  });
+  // ipcMain.on("send-audio-data", (event, data) => {
+  //   console.log("sending audio to whisper", data);
+  //   // send data to whisper process
+  //   whisperProcess.stdout.pipe(process.stdout);
+  //   whisperProcess.stdin.write(data);
+  //   // Send a message to the child process to stop the while loop
+  //   const message = "stop";
+  //   // fs.appendFileSync('electron', message);
+  //   whisperProcess.stdin.end();
+  // });
 
   createWindow("subtitles", {
     width: 450,
-    height: 350,
+    height: 10,
+    minHeight: 10,
     title: "Subtitles",
+    alwaysOnTop: true,
+    useContentSize: true,
     // uncomment when done with development
-    // frame: false
+    frame: false
   });
+
   createWindow("settings", {
     width: 450,
     height: 350,
