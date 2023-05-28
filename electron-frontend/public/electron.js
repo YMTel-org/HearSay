@@ -70,6 +70,8 @@ app.whenReady().then(() => {
   // Set global window variable to be the MAIN screen
   createWindow("main", {
     title: "Controls",
+    height: 180,
+    width: 800,
     // uncomment when done with development
     // frame: false
   });
@@ -90,12 +92,15 @@ app.whenReady().then(() => {
 
   createWindow("subtitles", {
     width: 450,
-    height: 350,
+    height: 10,
+    minHeight: 10,
     title: "Subtitles",
-    frame: false,
+    alwaysOnTop: true,
+    useContentSize: true,
     // uncomment when done with development
-    // frame: false
+    frame: false
   });
+
   createWindow("settings", {
     width: 450,
     height: 350,
