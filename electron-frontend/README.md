@@ -1,0 +1,1 @@
+You can now run yarn electron:start to kickstart your development flow, and yarn electron:package:<platform> to generate a distributable bundle.
