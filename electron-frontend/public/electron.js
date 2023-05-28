@@ -7,6 +7,7 @@ const { createURLRoute } = require("electron-router-dom");
 const path = require("path");
 const url = require("url");
 const fs = require("fs");
+
 // const mkfifo = require("mkfifo");
 
 // Create the native browser window.
@@ -73,24 +74,25 @@ app.whenReady().then(() => {
     // frame: false
   });
 
-  let whisperProcess = createWhisperProcess();
-  console.log(whisperProcess);
+  // let whisperProcess = createWhisperProcess();
+  // console.log(whisperProcess);
 
-  ipcMain.on("send-audio-data", (event, data) => {
-    console.log("sending audio to whisper", data);
-    // send data to whisper process
-    whisperProcess.stdout.pipe(process.stdout);
-    whisperProcess.stdin.write(data);
-    // Send a message to the child process to stop the while loop
-    const message = "stop";
-    // fs.appendFileSync('electron', message);
-    whisperProcess.stdin.end();
-  });
+  // ipcMain.on("send-audio-data", (event, data) => {
+  //   console.log("sending audio to whisper", data);
+  //   // send data to whisper process
+  //   whisperProcess.stdout.pipe(process.stdout);
+  //   whisperProcess.stdin.write(data);
+  //   // Send a message to the child process to stop the while loop
+  //   const message = "stop";
+  //   // fs.appendFileSync('electron', message);
+  //   whisperProcess.stdin.end();
+  // });
 
   createWindow("subtitles", {
     width: 450,
     height: 350,
     title: "Subtitles",
+    frame: false,
     // uncomment when done with development
     // frame: false
   });
