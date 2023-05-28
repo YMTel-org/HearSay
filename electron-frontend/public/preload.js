@@ -10,6 +10,9 @@ process.once("loaded", () => {
   contextBridge.exposeInMainWorld("electronAPI", {
     sendAudioData: (data) => {
       ipcRenderer.send("send-audio-data", data)
+    },
+    createNewWindow: (id, options) => {
+      ipcRenderer.send("create-window", id, options)
     }
   });
 });

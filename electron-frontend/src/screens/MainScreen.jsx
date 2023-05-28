@@ -1,3 +1,4 @@
+// import { ipcMain } from "electron";
 import { useEffect, useState } from "react";
 
 const MainScreen = () => {
@@ -19,11 +20,17 @@ const MainScreen = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState();
 
-  const handleOpenNewWindow = () => {
-    // Trigger the opening of the new window
+  const handleOpenSettings = () => {
+    // Trigger the opening of the settings window
     // You can include this logic in a button click handler or any other appropriate event
-    const newWindow = window.open("new-window", "_blank");
-    newWindow.location = "http://localhost:3000/#/subtitles"; // Replace with the desired URL or route to the NewWindow component
+    console.log("handleOPensettings")
+    window.electronAPI.createNewWindow("settings", {
+      minWidth: 700,
+      minHeight: 500,
+      maxWidth: 700,
+      maxHeight: 500,
+      title: "Settings",
+    })
   };
 
   const handleRecord = async () => {
@@ -80,7 +87,7 @@ const MainScreen = () => {
       <button onClick={handleRecord}>
         {isRecording ? "stop" : "start record"}
       </button>
-      <button onClick={handleOpenNewWindow}>Open New Window</button>
+      <button onClick={handleOpenSettings}>Open New Window</button>
     </div>
   );
 };

@@ -35,6 +35,7 @@ function createWindow(id, options) {
         slashes: true,
       })
     : "http://localhost:3000";
+  console.log(createURLRoute(appURL, id))
   window.loadURL(createURLRoute(appURL, id));
 
   // Automatically open Chrome's DevTools in development mode.
@@ -96,11 +97,13 @@ app.whenReady().then(() => {
     // uncomment when done with development
     // frame: false
   });
-  createWindow("settings", {
-    width: 450,
-    height: 350,
-    title: "Settings",
-  });
+  // createWindow("settings", {
+  //   minWidth: 700,
+  //   minHeight: 500,
+  //   maxWidth: 700,
+  //   maxHeight: 500,
+  //   title: "Settings",
+  // });
   setupLocalFilesNormalizerProxy();
 
   app.on("activate", function () {
@@ -120,6 +123,12 @@ app.on("window-all-closed", function () {
     app.quit();
   }
 });
+
+ipcMain.on("create-window", (options, id) => {
+  console.log("id", id)
+  console.log("options", options)
+  createWindow(id, options)
+})
 
 // If your app has no need to navigate or only needs to navigate to known pages,
 // it is a good idea to limit navigation outright to that known scope,
