@@ -42,26 +42,23 @@ const MainScreen = () => {
       // Listen for stop event to handle the collected chunks
       mediaRecorder.addEventListener("stop", () => {
         const blob = new Blob(chunks, { type: "audio/mp3" }); // specify the MIME type
+        const fileName = "recorded_audio.mp3";
+
+        // Initialize FormData and append the Blob audio data, model, language, and translate values
+        var formData = new FormData();
+        formData.append("file", blob, fileName);
+        formData.append("model", "whisper-1");
+        formData.append("language", "en");
+        formData.append("translate", "true");
 
         // POST the audio data to the server
         fetch("http://localhost:8080/v1/audio/transcriptions", {
           method: "POST",
-          body: blob, // directly send the Blob object
-          headers: {
-            "Content-Type": "audio/mp3", // specify the MIME type
-          },
+          body: formData, // directly send the FormData object
         })
-          .then((response) => {
-            if (!response.ok) {
-              // TODO: handle the error case
-              console.error("Failed to upload the audio", response);
-            } else {
-              console.log("Audio uploaded successfully");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
+          .then((response) => response.text())
+          .then((result) => console.log(result))
+          .catch((error) => console.error("Error:", error));
       });
 
       // Start recording the MediaStream
