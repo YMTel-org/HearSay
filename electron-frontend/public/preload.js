@@ -47,6 +47,9 @@ process.once("loaded", () => {
     createNewWindow: (id, options) => {
       ipcRenderer.send("create-window", id, options)
     },
+    setWindowSize: (height, width) => {
+      ipcRenderer.send("change-window-size", height, width)
+    },
     // functions which handle shared state
     rendererPlatform,
   });

@@ -41,9 +41,9 @@ function createWindow(id, options) {
   window.loadURL(createURLRoute(appURL, id));
 
   // Automatically open Chrome's DevTools in development mode.
-  if (!app.isPackaged) {
-    window.webContents.openDevTools();
-  }
+  // if (!app.isPackaged) {
+  //   window.webContents.openDevTools();
+  // }
 
   window.webContents.on("new-window", function (event, url) {
     event.preventDefault();
@@ -51,6 +51,7 @@ function createWindow(id, options) {
   });
 
   windows.add(window)
+  return window
 }
 
 // Setup a local proxy to adjust the paths of requested files when loading
@@ -68,6 +69,7 @@ function setupLocalFilesNormalizerProxy() {
   );
 }
 
+let subtitleWindow
 // This method will be called when Electron has finished its initialization and
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
@@ -81,15 +83,16 @@ app.whenReady().then(async() => {
     // frame: false
   });
 
-  createWindow("subtitles", {
+  subtitleWindow = createWindow("subtitles", {
     width: 450,
-    height: 10,
-    minHeight: 10,
+    height: 30,
+    minHeight: 0,
     title: "Subtitles",
     alwaysOnTop: true,
     useContentSize: true,
     // uncomment when done with development
-    frame: false
+    frame: false,
+    transparent: true,
   });
   setupLocalFilesNormalizerProxy();
 
@@ -137,4 +140,8 @@ app.on("web-contents-created", (event, contents) => {
 
 ipcMain.on("create-window", (options, id) => {
   createWindow(id, options)
+})
+
+ipcMain.on("change-window-size", (_, height, width) => {
+  subtitleWindow.setSize(width, height)
 })

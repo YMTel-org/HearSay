@@ -110,6 +110,7 @@ const MainScreen = () => {
     });
   };
 
+  
   const handleStart = () => {
     console.log("Start");
     if (speechSynthesis.paused) {
