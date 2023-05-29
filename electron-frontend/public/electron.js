@@ -7,10 +7,13 @@ const { createURLRoute } = require("electron-router-dom");
 const path = require("path");
 const url = require("url");
 const fs = require("fs");
-const { GlobalSharedStateManager, SettingsManager } = require('electron-shared-state-react/dist/main')
+const {
+  GlobalSharedStateManager,
+  SettingsManager,
+} = require("electron-shared-state-react/dist/main");
 
 const windows = new Set();
-let settings = {}
+let settings = {};
 
 // Create the native browser window.
 function createWindow(id, options) {
@@ -37,21 +40,20 @@ function createWindow(id, options) {
         slashes: true,
       })
     : "http://localhost:3000";
-  console.log(createURLRoute(appURL, id))
+  console.log(createURLRoute(appURL, id));
   window.loadURL(createURLRoute(appURL, id));
 
   // Automatically open Chrome's DevTools in development mode.
-  // if (!app.isPackaged) {
-  //   window.webContents.openDevTools();
-  // }
+  if (!app.isPackaged) {
+    window.webContents.openDevTools();
+  }
 
   window.webContents.on("new-window", function (event, url) {
     event.preventDefault();
     shell.openExternal(url);
   });
 
-  windows.add(window)
-  return window
+  windows.add(window);
 }
 
 // Setup a local proxy to adjust the paths of requested files when loading
@@ -69,11 +71,10 @@ function setupLocalFilesNormalizerProxy() {
   );
 }
 
-let subtitleWindow
 // This method will be called when Electron has finished its initialization and
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(async() => {
+app.whenReady().then(async () => {
   // Set global window variable to be the MAIN screen
   createWindow("main", {
     title: "Controls",
@@ -83,16 +84,15 @@ app.whenReady().then(async() => {
     // frame: false
   });
 
-  subtitleWindow = createWindow("subtitles", {
+  createWindow("subtitles", {
     width: 450,
-    height: 30,
-    minHeight: 0,
+    height: 10,
+    minHeight: 10,
     title: "Subtitles",
     alwaysOnTop: true,
     useContentSize: true,
     // uncomment when done with development
     frame: false,
-    transparent: true,
   });
   setupLocalFilesNormalizerProxy();
 
@@ -104,16 +104,14 @@ app.whenReady().then(async() => {
     }
   });
 
-  await SettingsManager.ready()
-  GlobalSharedStateManager.ready()
+  await SettingsManager.ready();
+  GlobalSharedStateManager.ready();
 });
 
-
-app.on('before-quit', async () => {
-  SettingsManager.quit()
-  GlobalSharedStateManager.quit()
-})
-
+app.on("before-quit", async () => {
+  SettingsManager.quit();
+  GlobalSharedStateManager.quit();
+});
 
 // Quit when all windows are closed, except on macOS.
 // There, it's common for applications and their menu bar to stay active until
@@ -139,9 +137,5 @@ app.on("web-contents-created", (event, contents) => {
 });
 
 ipcMain.on("create-window", (options, id) => {
-  createWindow(id, options)
-})
-
-ipcMain.on("change-window-size", (_, height, width) => {
-  subtitleWindow.setSize(width, height)
-})
+  createWindow(id, options);
+});

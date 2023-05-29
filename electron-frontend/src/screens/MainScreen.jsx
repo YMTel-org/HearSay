@@ -37,11 +37,12 @@ const MainScreen = () => {
 
   const { colorMode, toggleColorMode } = useColorMode();
   const [text, setText] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isTranslationLoading, setIsTranslationLoading] = useState(false);
+  const [isMinutesLoading, setIsMinutesLoading] = useState(false);
 
   const translateWithLLM = async (prompt) => {
     setText("Loading... Please Wait...");
-    setIsLoading(true);
+    setIsTranslationLoading(true);
     const response = await fetch("http://localhost:8080/v1/completions", {
       method: "POST",
       headers: {
@@ -66,12 +67,12 @@ const MainScreen = () => {
         setText(parsed.choices[0].text);
       }
     }
-    setIsLoading(false);
+    setIsTranslationLoading(false);
   };
 
   const translateOnline = async (prompt) => {
     setText("Loading... Please Wait...");
-    setIsLoading(true);
+    setIsTranslationLoading(true);
 
     const apiKey = process.env.REACT_APP_TRANSLATE_API_KEY;
 
@@ -89,7 +90,7 @@ const MainScreen = () => {
     // });
     console.log(response);
     // setText(translatedText);
-    setIsLoading(false);
+    setIsTranslationLoading(false);
   };
   const [tFile, setTFile] = useState();
 
@@ -110,7 +111,6 @@ const MainScreen = () => {
     });
   };
 
-  
   const handleStart = () => {
     console.log("Start");
     if (speechSynthesis.paused) {
@@ -264,7 +264,66 @@ const MainScreen = () => {
   }, [text]);
 
   const saveTranscript = () => {
-    FileSaver.saveAs(tFile, "hello world.txt");
+    FileSaver.saveAs(tFile, "transcript.txt");
+  };
+
+  const [fileContents, setFileContents] = useState("");
+
+  const handleFileUpload = async (file) => {
+    if (file) {
+      const reader = new FileReader();
+
+      reader.onload = async (e) => {
+        setIsMinutesLoading(true);
+        const contents = e.target.result;
+        setFileContents(contents);
+        console.log(contents);
+
+        const payload = {
+          model: "vicuna",
+          prompt:
+            "Summarise the following into meeting minutes in point form, in markdown notation:" +
+            contents,
+        };
+
+        const response = await fetch("http://localhost:8080/v1/completions", {
+          method: "POST",
+          body: JSON.stringify(payload),
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (response.ok) {
+          // Successful response handling
+          console.log("Data posted successfully!");
+          console.log(response);
+          const parsed = await response.json();
+          console.log(parsed.choices[0].text);
+          const file = new Blob([parsed.choices[0].text], {
+            type: "text/plain",
+          });
+          FileSaver.saveAs(file, "meeting_minutes.txt");
+        } else {
+          // Error handling
+          console.error("Error posting data:", response.status);
+        }
+        setIsMinutesLoading(false);
+      };
+
+      reader.readAsText(file);
+    }
+  };
+
+  const handleButtonClick = () => {
+    const inputElement = document.createElement("input");
+    inputElement.type = "file";
+    inputElement.accept = ".txt";
+    inputElement.onchange = (event) => {
+      const file = event.target.files[0];
+      handleFileUpload(file);
+    };
+    inputElement.click();
   };
 
   return (
@@ -282,6 +341,7 @@ const MainScreen = () => {
         />
         <IconButton ml={1} icon={<AiFillSave />} onClick={saveTranscript} />
         <Textarea
+          isDisabled={isTranslationLoading}
           placeholder={"Enter text here"}
           value={text}
           onChange={handleTextareaChange}
@@ -289,7 +349,9 @@ const MainScreen = () => {
           ml={4}
           mr={4}
         />
-        <Button onClick={handleTranslate}>Translate</Button>
+        <Button onClick={handleTranslate} isLoading={isTranslationLoading}>
+          Translate
+        </Button>
       </Flex>
       <Box width="100%">
         <Flex justify="space-between" align="center">
@@ -302,6 +364,14 @@ const MainScreen = () => {
               onClick={handleRestart}
             />
           </Flex>
+          <Button onClick={handleButtonClick} isLoading={isMinutesLoading}>
+            Create Meeting Minutes
+          </Button>
+          <IconButton
+            ml={4}
+            onClick={handleOpenSettings}
+            icon={<AiFillSetting />}
+          />
         </Flex>
       </Box>
     </Box>
