@@ -176,7 +176,7 @@ const MainScreen = () => {
 
   useEffect(() => {
     if (text && tFile) {
-      const appendedBlob = new Blob([tFile, text], { type: 'text/plain' });
+      const appendedBlob = new Blob([tFile, "\n", text], { type: 'text/plain' });
       console.log(appendedBlob)
       setTFile(appendedBlob)
     }
