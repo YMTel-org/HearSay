@@ -6,7 +6,5 @@ export const settingsAtom = atom({
   key: "settingsState",
   default: {
     language: "en", // en, none
-    fontSize: "md", // xs, sm, md, lg, xl,
-    theme: "light", // light, dark
   },
 });

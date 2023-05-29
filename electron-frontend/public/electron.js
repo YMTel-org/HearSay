@@ -7,8 +7,10 @@ const { createURLRoute } = require("electron-router-dom");
 const path = require("path");
 const url = require("url");
 const fs = require("fs");
+const { GlobalSharedStateManager, SettingsManager } = require('electron-shared-state-react/dist/main')
 
-// const mkfifo = require("mkfifo");
+const windows = new Set();
+let settings = {}
 
 // Create the native browser window.
 function createWindow(id, options) {
@@ -47,6 +49,8 @@ function createWindow(id, options) {
     event.preventDefault();
     shell.openExternal(url);
   });
+
+  windows.add(window)
 }
 
 // Setup a local proxy to adjust the paths of requested files when loading
@@ -67,7 +71,7 @@ function setupLocalFilesNormalizerProxy() {
 // This method will be called when Electron has finished its initialization and
 // is ready to create the browser windows.
 // Some APIs can only be used after this event occurs.
-app.whenReady().then(() => {
+app.whenReady().then(async() => {
   // Set global window variable to be the MAIN screen
   createWindow("main", {
     title: "Controls",
@@ -76,20 +80,6 @@ app.whenReady().then(() => {
     // uncomment when done with development
     // frame: false
   });
-
-  // let whisperProcess = createWhisperProcess();
-  // console.log(whisperProcess);
-
-  // ipcMain.on("send-audio-data", (event, data) => {
-  //   console.log("sending audio to whisper", data);
-  //   // send data to whisper process
-  //   whisperProcess.stdout.pipe(process.stdout);
-  //   whisperProcess.stdin.write(data);
-  //   // Send a message to the child process to stop the while loop
-  //   const message = "stop";
-  //   // fs.appendFileSync('electron', message);
-  //   whisperProcess.stdin.end();
-  // });
 
   createWindow("subtitles", {
     width: 450,
@@ -110,7 +100,17 @@ app.whenReady().then(() => {
       createWindow();
     }
   });
+
+  await SettingsManager.ready()
+  GlobalSharedStateManager.ready()
 });
+
+
+app.on('before-quit', async () => {
+  SettingsManager.quit()
+  GlobalSharedStateManager.quit()
+})
+
 
 // Quit when all windows are closed, except on macOS.
 // There, it's common for applications and their menu bar to stay active until
@@ -120,12 +120,6 @@ app.on("window-all-closed", function () {
     app.quit();
   }
 });
-
-ipcMain.on("create-window", (options, id) => {
-  console.log("id", id)
-  console.log("options", options)
-  createWindow(id, options)
-})
 
 // If your app has no need to navigate or only needs to navigate to known pages,
 // it is a good idea to limit navigation outright to that known scope,
@@ -141,46 +135,6 @@ app.on("web-contents-created", (event, contents) => {
   });
 });
 
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-
-// TODO: Can add some parameters for this function to allow configurations
-const createWhisperProcess = () => {
-  const command = "./public/whisper/command";
-  const args = [
-    "-m",
-    "./public/whisper/models/ggml-base.bin",
-    "-t",
-    "8",
-    "-c",
-    "0",
-  ];
-  const whisperProcess = spawn(command, args);
-  // on sending data to child process
-  whisperProcess.stdin.on("data", (data) => {
-    console.log(`stdin: ${data}`);
-  });
-
-  // Print any error
-  whisperProcess.stderr.on("data", (data) => {
-    console.error(`stderr: ${data}`);
-  });
-
-  // Handle data received from child process stdout
-  whisperProcess.stdout.on("data", (data) => {
-    const receivedData = data.toString();
-    console.log(`stdout: ${receivedData}`);
-  });
-
-  // // Create the named pipe (FIFO)
-  // mkfifo.mkfifoSync("electron", 0o600);
-
-  // Handle child process exit
-  whisperProcess.on("exit", (code, signal) => {
-    console.log("Child process exited with code:", code);
-    // Remove the named pipe (FIFO)
-    // fs.unlinkSync('electron');
-  });
-
-  return whisperProcess;
-};
+ipcMain.on("create-window", (options, id) => {
+  createWindow(id, options)
+})

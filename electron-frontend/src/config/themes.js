@@ -21,7 +21,7 @@ export const appTheme = extendTheme({
         fontSize: '30px',
         fontWeight: 800,
         color: props.colorMode === 'dark' ? 'white' : 'gray.600',
-      }
+      },
     }),
   },
 })

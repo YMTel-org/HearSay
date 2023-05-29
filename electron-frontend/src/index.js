@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import App from './App';
+import { initializePlatform } from 'electron-shared-state-react/dist/renderer'
+
+initializePlatform(window.electronAPI.rendererPlatform)
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
