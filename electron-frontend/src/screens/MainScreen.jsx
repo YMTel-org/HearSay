@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Button, Textarea, Flex, useColorMode } from '@chakra-ui/react';
 import { Icon } from '@chakra-ui/icons'
-import { AiFillSetting } from 'react-icons/ai';
+import { AiFillSave, AiFillSetting } from 'react-icons/ai';
 import { BsFillPlayFill, BsPauseFill, BsSave,  } from "react-icons/bs";
 import { MdOutlineRefresh } from "react-icons/md";
 import { useGlobalState } from 'electron-shared-state-react/dist/renderer/useGlobalState'
@@ -190,7 +190,7 @@ const MainScreen = () => {
     <Box color={theme} p={4} width="100%">
       <Flex align="center" mb={4}>
         <Button leftIcon={isRecording ? <BsStopFill/> : <CircleIcon boxSize={8} color='red.500' /> } onClick={handleRecord}/>
-        <Button leftIcon={BsSave} onClick={saveTranscript}></Button>
+        <Button leftIcon={<AiFillSave/>} onClick={saveTranscript}></Button>
         <Textarea placeholder={'Enter text here'} value={text} onChange={handleTextareaChange} flex={1} ml={4} mr={4}/>
         <Button onClick={handleTranslate}>Translate</Button>
       </Flex>
