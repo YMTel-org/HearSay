@@ -1,20 +1,88 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Textarea, Flex, useColorMode } from '@chakra-ui/react';
-import { Icon } from '@chakra-ui/icons'
-import { AiFillSetting } from 'react-icons/ai';
-import { BsFillPlayFill, BsPauseFill,  } from "react-icons/bs";
+import { Box, Button, Textarea, Flex, useColorMode } from "@chakra-ui/react";
+import { Icon } from "@chakra-ui/icons";
+import { AiFillSetting } from "react-icons/ai";
+import { BsFillPlayFill, BsPauseFill } from "react-icons/bs";
 import { MdOutlineRefresh } from "react-icons/md";
-import { useGlobalState } from 'electron-shared-state-react/dist/renderer/useGlobalState'
+import { useGlobalState } from "electron-shared-state-react/dist/renderer/useGlobalState";
+import TextDecoderStream from "../utils/TextDecoderStream";
+
+const LanguageToCode = {
+  English: "en",
+  Malay: "ms",
+  Chinese: "zh",
+};
 
 const MainScreen = () => {
   // TODO: Add some code in settings to select input device, temporarily just use index 0
   const [selectedInputDeviceId, setSelectedInputDeviceId] = useState("default");
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState();
-  const [theme, setTheme] = useGlobalState('theme', 'light')
-  const [language, setLanguage] = useGlobalState('language', 'en')
-  const { colorMode, toggleColorMode } = useColorMode()
+  const [theme, setTheme] = useGlobalState("theme", "light");
+  const [language, setLanguage] = useGlobalState("language", "en");
+
+  const [translateTo, setTranslateTo] = useGlobalState(
+    "translateTo",
+    "Chinese"
+  );
+  const [isOffline, setOffline] = useGlobalState("offline", true);
+
+  const { colorMode, toggleColorMode } = useColorMode();
   const [text, setText] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const translateWithLLM = async (prompt) => {
+    setText("Loading... Please Wait...");
+    setIsLoading(true);
+    const response = await fetch("http://localhost:8080/v1/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "vicuna",
+        prompt: `Translate the following into ${translateTo}: ${text}}`,
+      }),
+    });
+    if (!response.body) return;
+    const reader = response.body
+      .pipeThrough(new TextDecoderStream())
+      .getReader();
+    var { value, done } = await reader.read();
+    if (value) {
+      console.log(value);
+      const parsed = JSON.parse(value);
+      console.log(parsed.choices[0].text);
+      if (parsed.choices[0].text) {
+        console.log(parsed.choices[0].text);
+        setText(parsed.choices[0].text);
+      }
+    }
+    setIsLoading(false);
+  };
+
+  const translateOnline = async (prompt) => {
+    setText("Loading... Please Wait...");
+    setIsLoading(true);
+
+    const apiKey = process.env.REACT_APP_TRANSLATE_API_KEY;
+
+    const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}&q=${encodeURIComponent(
+      text
+    )}&source=en&target=${LanguageToCode[translateTo]}&format=text&model=base`;
+
+    const response = await fetch(url, {
+      method: "POST",
+    });
+
+    // const translatedText = await translate(text, {
+    //   to: LanguageToCode[translateTo],
+    //   fetchOptions: { agent },
+    // });
+    console.log(response);
+    // setText(translatedText);
+    setIsLoading(false);
+  };
 
   const handleOpenSettings = () => {
     // Trigger the opening of the settings window
@@ -25,7 +93,7 @@ const MainScreen = () => {
       maxWidth: 700,
       maxHeight: 500,
       title: "Settings",
-    })
+    });
   };
 
   const handleStart = () => {
@@ -33,26 +101,30 @@ const MainScreen = () => {
     if (speechSynthesis.paused) {
       speechSynthesis.resume();
     } else if (!speechSynthesis.speaking) {
-      let speech = new SpeechSynthesisUtterance(text)
+      let speech = new SpeechSynthesisUtterance(text);
       speechSynthesis.speak(speech);
     }
-  }
+  };
 
-  const handleStop = async() => {
+  const handleStop = async () => {
     console.log("Stop");
     if (speechSynthesis.speaking) {
       speechSynthesis.pause();
     }
-  }
+  };
 
   const handleRestart = async () => {
     console.log("Restart");
     speechSynthesis.cancel();
-  }
+  };
 
   const handleTranslate = () => {
-    console.log("Translate")
-  }
+    if (isOffline) {
+      translateWithLLM(text);
+    } else {
+      translateOnline(text);
+    }
+  };
 
   const handleTextareaChange = (event) => {
     setText(event.target.value);
@@ -105,40 +177,56 @@ const MainScreen = () => {
   };
 
   const CircleIcon = (props) => (
-    <Icon viewBox='0 0 200 200' {...props}>
+    <Icon viewBox="0 0 200 200" {...props}>
       <path
-        fill='currentColor'
-        d='M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0'
+        fill="currentColor"
+        d="M 100, 100 m -75, 0 a 75,75 0 1,0 150,0 a 75,75 0 1,0 -150,0"
       />
     </Icon>
-  )
+  );
 
   useEffect(() => {
     // sync colorMode and theme
     if (theme !== colorMode) {
-      toggleColorMode()
+      toggleColorMode();
     }
 
     // change in language
-    console.log(language)
-  }, [theme, language])
+    console.log(language);
+  }, [theme, language]);
 
   return (
     <Box color={theme} p={4} width="100%">
       <Flex align="center" mb={4}>
-        <Button leftIcon={<CircleIcon boxSize={8} color='red.500' /> } onClick={handleRecord}/>
-        <Textarea placeholder='Enter text here' value={text} onChange={handleTextareaChange} flex={1} ml={4} mr={4}/>
+        <Button
+          leftIcon={<CircleIcon boxSize={8} color="red.500" />}
+          onClick={handleRecord}
+        />
+        <Textarea
+          isDisabled={isLoading}
+          placeholder="Enter text here"
+          value={text}
+          onChange={handleTextareaChange}
+          flex={1}
+          ml={4}
+          mr={4}
+        />
         <Button onClick={handleTranslate}>Translate</Button>
       </Flex>
       <Box width="100%">
-      <Flex justify="space-between" align="center">
-        <Flex justify="center" flex={1}>
-          <Button leftIcon={<BsFillPlayFill/>} onClick={handleStart}/>
-          {/* <Button ml={4} leftIcon={<BsPauseFill/>} onClick={handleStop}/> */}
-          <Button ml={4} leftIcon={<MdOutlineRefresh />} onClick={handleRestart} />
+        <Flex justify="space-between" align="center">
+          <Flex justify="center" flex={1}>
+            <Button leftIcon={<BsFillPlayFill />} onClick={handleStart} />
+            {/* <Button ml={4} leftIcon={<BsPauseFill/>} onClick={handleStop}/> */}
+            <Button
+              isDisabled={isLoading}
+              ml={4}
+              leftIcon={<MdOutlineRefresh />}
+              onClick={handleRestart}
+            />
+          </Flex>
+          <Button onClick={handleOpenSettings} leftIcon={<AiFillSetting />} />
         </Flex>
-        <Button onClick={handleOpenSettings} leftIcon={<AiFillSetting/>} />
-      </Flex>    
       </Box>
     </Box>
   );
