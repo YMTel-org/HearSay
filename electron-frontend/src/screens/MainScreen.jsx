@@ -1,36 +1,31 @@
 import { useEffect, useState } from "react";
-import { Box, Button, Textarea, Flex } from '@chakra-ui/react';
+import { Box, Button, Textarea, Flex, useColorMode } from '@chakra-ui/react';
 import { Icon } from '@chakra-ui/icons'
 import { AiFillSetting } from 'react-icons/ai';
 import { BsFillPlayFill, BsPauseFill,  } from "react-icons/bs";
 import { MdOutlineRefresh } from "react-icons/md";
-
+import { useGlobalState } from 'electron-shared-state-react/dist/renderer/useGlobalState'
 
 const MainScreen = () => {
-  useEffect(() => {
-    // const getDevices = async () => {
-    //   const devices = await window.navigator.mediaDevices.enumerateDevices()
-    //   console.log(devices);
-    // };
-
-    // getDevices();
-
-    return () => {
-      // tis now gets called when the component unmounts
-    };
-  });
-
   // TODO: Add some code in settings to select input device, temporarily just use index 0
   const [selectedInputDeviceId, setSelectedInputDeviceId] = useState("default");
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState();
+  const [theme, setTheme] = useGlobalState('theme', 'light')
+  const [language, setLanguage] = useGlobalState('language', 'en')
+  const { colorMode, toggleColorMode } = useColorMode()
   const [text, setText] = useState("");
 
-  const handleOpenNewWindow = () => {
-    // Trigger the opening of the new window
+  const handleOpenSettings = () => {
+    // Trigger the opening of the settings window
     // You can include this logic in a button click handler or any other appropriate event
-    const newWindow = window.open("new-window", "_blank");
-    newWindow.location = "http://localhost:3000/#/subtitles"; // Replace with the desired URL or route to the NewWindow component
+    window.electronAPI.createNewWindow("settings", {
+      minWidth: 700,
+      minHeight: 500,
+      maxWidth: 700,
+      maxHeight: 500,
+      title: "Settings",
+    })
   };
 
   const handleStart = () => {
@@ -118,8 +113,18 @@ const MainScreen = () => {
     </Icon>
   )
 
+  useEffect(() => {
+    // sync colorMode and theme
+    if (theme !== colorMode) {
+      toggleColorMode()
+    }
+
+    // change in language
+    console.log(language)
+  }, [theme, language])
+
   return (
-    <Box p={4} width="100%">
+    <Box color={theme} p={4} width="100%">
       <Flex align="center" mb={4}>
         <Button leftIcon={<CircleIcon boxSize={8} color='red.500' /> } onClick={handleRecord}/>
         <Textarea placeholder='Enter text here' value={text} onChange={handleTextareaChange} flex={1} ml={4} mr={4}/>
@@ -132,18 +137,10 @@ const MainScreen = () => {
           {/* <Button ml={4} leftIcon={<BsPauseFill/>} onClick={handleStop}/> */}
           <Button ml={4} leftIcon={<MdOutlineRefresh />} onClick={handleRestart} />
         </Flex>
-        <Button leftIcon={<AiFillSetting/>} onClick={handleOpenNewWindow}/>
-      </Flex>
-        
+        <Button onClick={handleOpenSettings} leftIcon={<AiFillSetting/>} />
+      </Flex>    
       </Box>
     </Box>
-    // <div className="App">
-    //   <p>something</p>
-    //   <button onClick={handleRecord}>
-    //     {isRecording ? "stop" : "start record"}
-    //   </button>
-    //   <button onClick={handleOpenNewWindow}>Open New Window</button>
-    // </div>
   );
 };
 
