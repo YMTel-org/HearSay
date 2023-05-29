@@ -14,6 +14,7 @@ const MainScreen = () => {
   const [theme, setTheme] = useGlobalState('theme', 'light')
   const [language, setLanguage] = useGlobalState('language', 'en')
   const { colorMode, toggleColorMode } = useColorMode()
+  const [text, setText] = useState("");
 
   const handleOpenSettings = () => {
     // Trigger the opening of the settings window
@@ -25,6 +26,36 @@ const MainScreen = () => {
       maxHeight: 500,
       title: "Settings",
     })
+  };
+
+  const handleStart = () => {
+    console.log("Start");
+    if (speechSynthesis.paused) {
+      speechSynthesis.resume();
+    } else if (!speechSynthesis.speaking) {
+      let speech = new SpeechSynthesisUtterance(text)
+      speechSynthesis.speak(speech);
+    }
+  }
+
+  const handleStop = async() => {
+    console.log("Stop");
+    if (speechSynthesis.speaking) {
+      speechSynthesis.pause();
+    }
+  }
+
+  const handleRestart = async () => {
+    console.log("Restart");
+    speechSynthesis.cancel();
+  }
+
+  const handleTranslate = () => {
+    console.log("Translate")
+  }
+
+  const handleTextareaChange = (event) => {
+    setText(event.target.value);
   };
 
   const handleRecord = async () => {
@@ -43,26 +74,23 @@ const MainScreen = () => {
       // Listen for stop event to handle the collected chunks
       mediaRecorder.addEventListener("stop", () => {
         const blob = new Blob(chunks, { type: "audio/mp3" }); // specify the MIME type
+        const fileName = "recorded_audio.mp3";
+
+        // Initialize FormData and append the Blob audio data, model, language, and translate values
+        var formData = new FormData();
+        formData.append("file", blob, fileName);
+        formData.append("model", "whisper-1");
+        formData.append("language", "en");
+        formData.append("translate", "true");
 
         // POST the audio data to the server
         fetch("http://localhost:8080/v1/audio/transcriptions", {
           method: "POST",
-          body: blob, // directly send the Blob object
-          headers: {
-            "Content-Type": "audio/mp3", // specify the MIME type
-          },
+          body: formData, // directly send the FormData object
         })
-          .then((response) => {
-            if (!response.ok) {
-              // TODO: handle the error case
-              console.error("Failed to upload the audio", response);
-            } else {
-              console.log("Audio uploaded successfully");
-            }
-          })
-          .catch((error) => {
-            console.error("Error:", error);
-          });
+          .then((response) => response.text())
+          .then((result) => console.log(result))
+          .catch((error) => console.error("Error:", error));
       });
 
       // Start recording the MediaStream
@@ -98,17 +126,16 @@ const MainScreen = () => {
   return (
     <Box color={theme} p={4} width="100%">
       <Flex align="center" mb={4}>
-        <Button leftIcon={<CircleIcon boxSize={8} color='red.500' />} />
-        <Textarea placeholder='Here is a sample placeholder' flex={1} ml={4} mr={4}/>
-        <Button>Translate</Button>
-        <p>{language}</p>
+        <Button leftIcon={<CircleIcon boxSize={8} color='red.500' /> } onClick={handleRecord}/>
+        <Textarea placeholder='Enter text here' value={text} onChange={handleTextareaChange} flex={1} ml={4} mr={4}/>
+        <Button onClick={handleTranslate}>Translate</Button>
       </Flex>
       <Box width="100%">
       <Flex justify="space-between" align="center">
         <Flex justify="center" flex={1}>
-          <Button leftIcon={<BsFillPlayFill/>} />
-          <Button ml={4} leftIcon={<BsPauseFill/>} />
-          <Button ml={4} leftIcon={<MdOutlineRefresh />} />
+          <Button leftIcon={<BsFillPlayFill/>} onClick={handleStart}/>
+          {/* <Button ml={4} leftIcon={<BsPauseFill/>} onClick={handleStop}/> */}
+          <Button ml={4} leftIcon={<MdOutlineRefresh />} onClick={handleRestart} />
         </Flex>
         <Button onClick={handleOpenSettings} leftIcon={<AiFillSetting/>} />
       </Flex>    
