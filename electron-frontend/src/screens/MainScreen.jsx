@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Box, Button, Textarea, Flex, useColorMode } from '@chakra-ui/react';
 import { Icon } from '@chakra-ui/icons'
 import { AiFillSetting } from 'react-icons/ai';
-import { BsFillPlayFill, BsPauseFill,  } from "react-icons/bs";
+import { BsFillPlayFill, BsPauseFill, BsSave,  } from "react-icons/bs";
 import { MdOutlineRefresh } from "react-icons/md";
 import { useGlobalState } from 'electron-shared-state-react/dist/renderer/useGlobalState'
+import { BsStopFill } from "react-icons/bs";
+import FileSaver from 'file-saver';
 
 const MainScreen = () => {
   // TODO: Add some code in settings to select input device, temporarily just use index 0
@@ -15,6 +17,12 @@ const MainScreen = () => {
   const [language, setLanguage] = useGlobalState('language', 'en')
   const { colorMode, toggleColorMode } = useColorMode()
   const [text, setText] = useState("");
+  const [tFile, setTFile] = useState();
+
+  useEffect(() => {
+    const file = new Blob([], { type: 'text/plain' });
+    setTFile(file);
+  }, [])
 
   const handleOpenSettings = () => {
     // Trigger the opening of the settings window
@@ -46,7 +54,6 @@ const MainScreen = () => {
   }
 
   const handleRestart = async () => {
-    console.log("Restart");
     speechSynthesis.cancel();
   }
 
@@ -58,9 +65,49 @@ const MainScreen = () => {
     setText(event.target.value);
   };
 
+  // const onTranscribe = async (blob) => {
+  //   const fileName = "recorded_audio.mp3";
+
+  //   // Initialize FormData and append the Blob audio data, model, language, and translate values
+  //   var formData = new FormData();
+  //   formData.append("file", blob, fileName);
+  //   formData.append("model", "whisper-1");
+  //   formData.append("language", "en");
+  //   formData.append("translate", "true");
+    
+  //   const response = fetch("http://localhost:8080/v1/audio/transcriptions", {
+  //         method: "POST",
+  //         body: formData, // directly send the FormData object
+  //       })
+  //         .then((response) => response.text())
+  //         .then((result) => result)
+  //         .catch((error) => console.error("Error:", error));
+  //   console.log(response)
+  //   // you must return result from your server in Transcript format
+  //   return {
+  //     blob,
+  //     response,
+  //   }
+  // }
+
+  // const { 
+  //   recording,
+  //   speaking,
+  //   transcribing,
+  //   transcript,
+  //   pauseRecording,
+  //   startRecording,
+  //   stopRecording,
+  //  } = useWhisper({
+  //   // callback to handle transcription with custom server
+  //   onTranscribe,
+  // })
+
   const handleRecord = async () => {
     if (!isRecording) {
+      // startRecording()
       setIsRecording(true);
+      
       const mediaStream = await navigator.mediaDevices.getUserMedia({
         audio: { deviceId: { exact: selectedInputDeviceId } },
       });
@@ -72,7 +119,8 @@ const MainScreen = () => {
       });
 
       // Listen for stop event to handle the collected chunks
-      mediaRecorder.addEventListener("stop", () => {
+      // TODO: Can try changing this to setInterval - so far I tried it doesn't work, some ffmpeg error from server side.
+      mediaRecorder.addEventListener("stop", async () => {
         const blob = new Blob(chunks, { type: "audio/mp3" }); // specify the MIME type
         const fileName = "recorded_audio.mp3";
 
@@ -89,14 +137,17 @@ const MainScreen = () => {
           body: formData, // directly send the FormData object
         })
           .then((response) => response.text())
-          .then((result) => console.log(result))
+          .then((result) => {
+            setText(JSON.parse(result).text)
+          })
           .catch((error) => console.error("Error:", error));
-      });
+        });
 
       // Start recording the MediaStream
       mediaRecorder.start();
       setMediaRecorder(mediaRecorder);
     } else {
+      // stopRecording()
       setIsRecording(false);
       if (mediaRecorder) {
         mediaRecorder.stop();
@@ -123,18 +174,31 @@ const MainScreen = () => {
     console.log(language)
   }, [theme, language])
 
+  useEffect(() => {
+    if (text && tFile) {
+      const appendedBlob = new Blob([tFile, text], { type: 'text/plain' });
+      console.log(appendedBlob)
+      setTFile(appendedBlob)
+    }
+  }, [text])
+
+  const saveTranscript = () => {
+    FileSaver.saveAs(tFile, "hello world.txt");
+  }
+
   return (
     <Box color={theme} p={4} width="100%">
       <Flex align="center" mb={4}>
-        <Button leftIcon={<CircleIcon boxSize={8} color='red.500' /> } onClick={handleRecord}/>
-        <Textarea placeholder='Enter text here' value={text} onChange={handleTextareaChange} flex={1} ml={4} mr={4}/>
+        <Button leftIcon={isRecording ? <BsStopFill/> : <CircleIcon boxSize={8} color='red.500' /> } onClick={handleRecord}/>
+        <Button leftIcon={BsSave} onClick={saveTranscript}></Button>
+        <Textarea placeholder={'Enter text here'} value={text} onChange={handleTextareaChange} flex={1} ml={4} mr={4}/>
         <Button onClick={handleTranslate}>Translate</Button>
       </Flex>
       <Box width="100%">
       <Flex justify="space-between" align="center">
         <Flex justify="center" flex={1}>
           <Button leftIcon={<BsFillPlayFill/>} onClick={handleStart}/>
-          {/* <Button ml={4} leftIcon={<BsPauseFill/>} onClick={handleStop}/> */}
+          <Button ml={4} leftIcon={<BsPauseFill/>} onClick={handleStop}/>
           <Button ml={4} leftIcon={<MdOutlineRefresh />} onClick={handleRestart} />
         </Flex>
         <Button onClick={handleOpenSettings} leftIcon={<AiFillSetting/>} />
