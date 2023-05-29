@@ -24,12 +24,43 @@ const MainScreen = () => {
   const [selectedInputDeviceId, setSelectedInputDeviceId] = useState("default");
   const [isRecording, setIsRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState();
+  const [text, setText] = useState("");
 
   const handleOpenNewWindow = () => {
     // Trigger the opening of the new window
     // You can include this logic in a button click handler or any other appropriate event
     const newWindow = window.open("new-window", "_blank");
     newWindow.location = "http://localhost:3000/#/subtitles"; // Replace with the desired URL or route to the NewWindow component
+  };
+
+  const handleStart = () => {
+    console.log("Start");
+    if (speechSynthesis.paused) {
+      speechSynthesis.resume();
+    } else if (!speechSynthesis.speaking) {
+      let speech = new SpeechSynthesisUtterance(text)
+      speechSynthesis.speak(speech);
+    }
+  }
+
+  const handleStop = async() => {
+    console.log("Stop");
+    if (speechSynthesis.speaking) {
+      speechSynthesis.pause();
+    }
+  }
+
+  const handleRestart = async () => {
+    console.log("Restart");
+    speechSynthesis.cancel();
+  }
+
+  const handleTranslate = () => {
+    console.log("Translate")
+  }
+
+  const handleTextareaChange = (event) => {
+    setText(event.target.value);
   };
 
   const handleRecord = async () => {
@@ -90,18 +121,18 @@ const MainScreen = () => {
   return (
     <Box p={4} width="100%">
       <Flex align="center" mb={4}>
-        <Button leftIcon={<CircleIcon boxSize={8} color='red.500' />} />
-        <Textarea placeholder='Here is a sample placeholder' flex={1} ml={4} mr={4}/>
-        <Button>Translate</Button>
+        <Button leftIcon={<CircleIcon boxSize={8} color='red.500' /> } onClick={handleRecord}/>
+        <Textarea placeholder='Enter text here' value={text} onChange={handleTextareaChange} flex={1} ml={4} mr={4}/>
+        <Button onClick={handleTranslate}>Translate</Button>
       </Flex>
       <Box width="100%">
       <Flex justify="space-between" align="center">
         <Flex justify="center" flex={1}>
-          <Button leftIcon={<BsFillPlayFill/>} />
-          <Button ml={4} leftIcon={<BsPauseFill/>} />
-          <Button ml={4} leftIcon={<MdOutlineRefresh />} />
+          <Button leftIcon={<BsFillPlayFill/>} onClick={handleStart}/>
+          {/* <Button ml={4} leftIcon={<BsPauseFill/>} onClick={handleStop}/> */}
+          <Button ml={4} leftIcon={<MdOutlineRefresh />} onClick={handleRestart} />
         </Flex>
-        <Button leftIcon={<AiFillSetting/>} />
+        <Button leftIcon={<AiFillSetting/>} onClick={handleOpenNewWindow}/>
       </Flex>
         
       </Box>
