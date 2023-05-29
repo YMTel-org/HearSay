@@ -1,5 +1,8 @@
 # MYTranslator
 
+![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/2c9cb32b-68e3-4b7c-959a-5286c6dc4d7c)
+
+
 Overcoming physical and communication barriers. MyTranslator is an offline app that aims to help overcome language barriers with live subtitles, live translation, replying in any language via
 text to speech and meeting minutes generation using quantized AI models such as whisper.cpp and a Llama based LLM model, Vicuna.
 
@@ -33,3 +36,6 @@ Note: For online translation, you will need to generate your own Google Translat
 ```
 REACT_APP_TRANSLATE_API_KEY={YOUR_KEY_HERE}
 ```
+
+
+
