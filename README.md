@@ -1,6 +1,6 @@
 # MYTranslator
 
-![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/2c9cb32b-68e3-4b7c-959a-5286c6dc4d7c)
+![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/984ed78f-f8a1-4b18-929f-bb515fde6f80)
 
 Overcoming physical and communication barriers. MyTranslator is an offline app that aims to help overcome language barriers with live subtitles, live translation, replying in any language via
 text to speech and meeting minutes generation using quantized AI models such as whisper.cpp and a Llama based LLM model, Vicuna.
@@ -41,6 +41,10 @@ REACT_APP_TRANSLATE_API_KEY={YOUR_KEY_HERE}
 
 - For Mac, navigate to System Preferences > Accessiblility > Spoken Content add the following voices Daniel, Kate and Li-Mu Siri, Ting-Ting
   ![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/07fb538d-80a1-4dd9-b4b5-81d71bcb6083)
+
+## Video
+
+Watch our demo of the application [here](https://drive.google.com/file/d/1eMlMzr2xy9BWlxDyQw3rsB9DFSxqmdiY/view?usp=sharing).
 
 ## Inspiration
 
