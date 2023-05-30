@@ -20,7 +20,7 @@ const SubtitleScreen = () => {
 
   useEffect(() => {
     if (transcript) {
-      setSentences(transcript.split("\n"))
+      setSentences(transcript.split("."))
     }
     scrollToBottom()
   }, [transcript])

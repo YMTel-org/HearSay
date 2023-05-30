@@ -201,6 +201,10 @@ const MainScreen = () => {
       // Listen for stop event to handle the collected chunks
       // TODO: Can try changing this to setInterval - so far I tried it doesn't work, some ffmpeg error from server side.
       mediaRecorder.addEventListener("stop", async () => {
+        // console.log("interval")
+        // if (mediaRecorder.state === "recording") {
+        //   mediaRecorder.stop()
+        // }
         const blob = new Blob(chunks, { type: "audio/mp3" }); // specify the MIME type
         const fileName = "recorded_audio.mp3";
 
@@ -219,6 +223,7 @@ const MainScreen = () => {
           .then((response) => response.text())
           .then((result) => {
             setText(JSON.parse(result).text);
+            // mediaRecorder.start()
           })
           .catch((error) => console.error("Error:", error));
       });
@@ -229,7 +234,7 @@ const MainScreen = () => {
     } else {
       // stopRecording()
       setIsRecording(false);
-      if (mediaRecorder) {
+      if (mediaRecorder && mediaRecorder.state === "recording") {
         mediaRecorder.stop();
       }
     }
@@ -257,8 +262,8 @@ const MainScreen = () => {
   // when text changes
   useEffect(() => {
     if (text) {
-      const newString = transcript.concat("\n").concat(text)
-      setTranscript(newString)
+      const newTranscript = transcript + "\n" + text;
+      setTranscript(newTranscript)
     }
 
     if (text && tFile) {
