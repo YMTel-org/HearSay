@@ -399,8 +399,13 @@ const MainScreen = () => {
               onClick={handleRecord}
             />
             <IconButton ml={4} icon={<AiFillSave />} onClick={saveTranscript} />
-            <Button width={80} ml={4} onClick={handleButtonClick} isLoading={isMinutesLoading}>
-                Create Meeting Minutes
+            <Button
+              width={80}
+              ml={4}
+              onClick={handleButtonClick}
+              isLoading={isMinutesLoading}
+            >
+              Create Meeting Minutes
             </Button>
           </Flex>
         </Flex>
@@ -411,15 +416,17 @@ const MainScreen = () => {
           value={textAreaText}
           onChange={handleTextareaChange}
           flex={1}
-          ml={4}
-          mr={4}
           mt={2}
         />
       </Flex>
       <Box width="100%">
         <Flex justify="space-between">
           <Flex justify="center" flex={1}>
-            <Button onClick={handleTranslate} isLoading={isTranslationLoading} mr={4}>
+            <Button
+              onClick={handleTranslate}
+              isLoading={isTranslationLoading}
+              mr={4}
+            >
               Translate
             </Button>
             <IconButton icon={<BsFillPlayFill />} onClick={handleStart} />
