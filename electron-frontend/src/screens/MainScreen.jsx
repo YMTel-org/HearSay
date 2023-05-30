@@ -28,7 +28,7 @@ const MainScreen = () => {
   const [mediaRecorder, setMediaRecorder] = useState();
   const [theme, setTheme] = useGlobalState("theme", "light");
   const [language, setLanguage] = useGlobalState("language", "en");
-
+  const [gender, setGender] = useGlobalState("gender", "Male");
   const [translateTo, setTranslateTo] = useGlobalState(
     "translateTo",
     "Chinese"
@@ -39,6 +39,71 @@ const MainScreen = () => {
   const [text, setText] = useState("");
   const [isTranslationLoading, setIsTranslationLoading] = useState(false);
   const [isMinutesLoading, setIsMinutesLoading] = useState(false);
+
+  const getVoiceURI = () => {
+    const isWindows =
+      getVoiceByURI("Microsoft David - English (United States)") !== null;
+
+    if (isWindows) {
+      if (gender === "Male") {
+        switch (translateTo) {
+          case "English":
+            return "Microsoft David - English (United States)";
+          case "Chinese":
+            return "Microsoft Kangkang - Chinese (Simplified, PRC)";
+          case "Malay":
+            return "Microsoft Rizwan - Malay (Malaysia)";
+          default:
+            return "Microsoft David - English (United States)";
+        }
+      } else {
+        switch (translateTo) {
+          case "English":
+            return "Microsoft Zira - English (United States)";
+          case "Chinese":
+            return "Microsoft Yaoyao - Chinese (Simplified, PRC)";
+          // No female malay voice in Microsoft
+          case "Malay":
+            return "Microsoft Rizwan - Malay (Malaysia)";
+          default:
+            return "Microsoft Zira - English (United States)";
+        }
+      }
+    } else {
+      if (gender === "Male") {
+        switch (translateTo) {
+          case "English":
+            return "Daniel";
+          case "Chinese":
+            return "Li-Mu Siri";
+          default:
+            return "Daniel";
+        }
+      } else {
+        switch (translateTo) {
+          case "English":
+            return "Kate";
+          case "Chinese":
+            return "Ting-Ting";
+          default:
+            return "Kate";
+        }
+      }
+    }
+  };
+
+  function getVoiceByURI(voiceURI) {
+    const voices = speechSynthesis.getVoices();
+
+    for (let i = 0; i < voices.length; i++) {
+      if (voices[i].voiceURI === voiceURI) {
+        return voices[i];
+      }
+    }
+
+    // Return null or handle the case when no matching voice is found
+    return null;
+  }
 
   const translateWithLLM = async (prompt) => {
     setText("Loading... Please Wait...");
@@ -111,24 +176,46 @@ const MainScreen = () => {
     });
   };
 
+  useEffect(() => {
+    const temp = new SpeechSynthesisUtterance("");
+    speechSynthesis.speak(temp);
+  }, []);
+
   const handleStart = () => {
     console.log("Start");
+    console.log(speechSynthesis.getVoices());
     if (speechSynthesis.paused) {
       speechSynthesis.resume();
     } else if (!speechSynthesis.speaking) {
       let speech = new SpeechSynthesisUtterance(text);
+      console.log(getVoiceByURI(getVoiceURI()));
+
+      speech.voice = getVoiceByURI(getVoiceURI()); // Set the language code based on the selected language
       speechSynthesis.speak(speech);
     }
   };
 
-  const handleStop = async () => {
-    console.log("Stop");
+  // Function to get the language code based on the selected language
+  const getLanguageCode = (language) => {
+    switch (language) {
+      case "English":
+        return "en-US";
+      case "Chinese":
+        return "zh-CN";
+      default:
+        return "en-US";
+    }
+  };
+
+  const handlePause = async () => {
+    console.log("Pause");
     if (speechSynthesis.speaking) {
       speechSynthesis.pause();
     }
   };
 
   const handleRestart = async () => {
+    console.log("Restart");
     speechSynthesis.cancel();
   };
 
@@ -357,7 +444,7 @@ const MainScreen = () => {
         <Flex justify="space-between" align="center">
           <Flex justify="center" flex={1}>
             <IconButton icon={<BsFillPlayFill />} onClick={handleStart} />
-            <IconButton ml={4} icon={<BsPauseFill />} onClick={handleStop} />
+            <IconButton ml={4} icon={<BsPauseFill />} onClick={handlePause} />
             <IconButton
               ml={4}
               icon={<MdOutlineRefresh />}

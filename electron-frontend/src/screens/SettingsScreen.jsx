@@ -20,6 +20,7 @@ const SettingsScreen = () => {
     "translateTo",
     "Chinese"
   );
+  const [gender, setGender] = useGlobalState("gender", "Male");
   const [isOffline, setOffline] = useGlobalState("offline", true);
 
   // local values that arent set to global unless saved
@@ -27,11 +28,14 @@ const SettingsScreen = () => {
   const [localTranslateTo, setLocalTranslateTo] = useState(translateTo);
   const [isLocalOffline, setIsLocalOffline] = useState(isOffline);
 
+  const [localGender, setLocalGender] = useState(gender);
+
   const handleSave = () => {
     setTheme(colorMode);
     setLanguage(localLanguage);
     setTranslateTo(localTranslateTo);
     setOffline(isLocalOffline);
+    setGender(localGender);
   };
 
   return (
@@ -66,6 +70,18 @@ const SettingsScreen = () => {
           <option value="English">English</option>
           <option value="Chinese">Chinese</option>
           <option value="Malay">Malay</option>
+        </Select>
+      </Stack>
+      <Stack spacing={2}>
+        <h2>Reply Voice Type</h2>
+        <Text as="span">Choose between Male or Female sounding voice.</Text>
+        <Select
+          placeholder="Select Voice Type"
+          value={localGender}
+          onChange={(e) => setLocalGender(e.target.value)}
+        >
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
         </Select>
       </Stack>
       <Stack spacing={2}>
