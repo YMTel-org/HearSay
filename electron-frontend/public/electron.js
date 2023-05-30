@@ -43,11 +43,6 @@ function createWindow(id, options) {
   console.log(createURLRoute(appURL, id));
   window.loadURL(createURLRoute(appURL, id));
 
-  // Automatically open Chrome's DevTools in development mode.
-  if (!app.isPackaged) {
-    window.webContents.openDevTools();
-  }
-
   window.webContents.on("new-window", function (event, url) {
     event.preventDefault();
     shell.openExternal(url);
@@ -78,10 +73,10 @@ app.whenReady().then(async () => {
   // Set global window variable to be the MAIN screen
   createWindow("main", {
     title: "Controls",
-    height: 180,
+    height: 300,
     width: 800,
     // uncomment when done with development
-    // frame: false
+    frame: false
   });
 
   createWindow("subtitles", {

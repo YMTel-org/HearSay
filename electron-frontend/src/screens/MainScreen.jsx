@@ -29,6 +29,7 @@ const MainScreen = () => {
   const [theme, setTheme] = useGlobalState("theme", "light");
   const [language, setLanguage] = useGlobalState("language", "en");
   const [transcript, setTranscript] = useGlobalState("transcript", "");
+  const [textAreaText, setTextAreaText] = useState("");
 
   const [translateTo, setTranslateTo] = useGlobalState(
     "translateTo",
@@ -113,11 +114,11 @@ const MainScreen = () => {
   };
 
   const handleStart = () => {
-    console.log("Start");
     if (speechSynthesis.paused) {
       speechSynthesis.resume();
     } else if (!speechSynthesis.speaking) {
-      let speech = new SpeechSynthesisUtterance(text);
+      console.log(textAreaText)
+      let speech = new SpeechSynthesisUtterance(textAreaText);
       speechSynthesis.speak(speech);
     }
   };
@@ -142,50 +143,11 @@ const MainScreen = () => {
   };
 
   const handleTextareaChange = (event) => {
-    setText(event.target.value);
+    setTextAreaText(event.target.value);
   };
-
-  // const onTranscribe = async (blob) => {
-  //   const fileName = "recorded_audio.mp3";
-
-  //   // Initialize FormData and append the Blob audio data, model, language, and translate values
-  //   var formData = new FormData();
-  //   formData.append("file", blob, fileName);
-  //   formData.append("model", "whisper-1");
-  //   formData.append("language", "en");
-  //   formData.append("translate", "true");
-
-  //   const response = fetch("http://localhost:8080/v1/audio/transcriptions", {
-  //         method: "POST",
-  //         body: formData, // directly send the FormData object
-  //       })
-  //         .then((response) => response.text())
-  //         .then((result) => result)
-  //         .catch((error) => console.error("Error:", error));
-  //   console.log(response)
-  //   // you must return result from your server in Transcript format
-  //   return {
-  //     blob,
-  //     response,
-  //   }
-  // }
-
-  // const {
-  //   recording,
-  //   speaking,
-  //   transcribing,
-  //   transcript,
-  //   pauseRecording,
-  //   startRecording,
-  //   stopRecording,
-  //  } = useWhisper({
-  //   // callback to handle transcription with custom server
-  //   onTranscribe,
-  // })
 
   const handleRecord = async () => {
     if (!isRecording) {
-      // startRecording()
       setIsRecording(true);
 
       const mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -199,12 +161,7 @@ const MainScreen = () => {
       });
 
       // Listen for stop event to handle the collected chunks
-      // TODO: Can try changing this to setInterval - so far I tried it doesn't work, some ffmpeg error from server side.
       mediaRecorder.addEventListener("stop", async () => {
-        // console.log("interval")
-        // if (mediaRecorder.state === "recording") {
-        //   mediaRecorder.stop()
-        // }
         const blob = new Blob(chunks, { type: "audio/mp3" }); // specify the MIME type
         const fileName = "recorded_audio.mp3";
 
@@ -223,7 +180,6 @@ const MainScreen = () => {
           .then((response) => response.text())
           .then((result) => {
             setText(JSON.parse(result).text);
-            // mediaRecorder.start()
           })
           .catch((error) => console.error("Error:", error));
       });
@@ -339,34 +295,46 @@ const MainScreen = () => {
 
   return (
     <Box color={theme} p={4} width="100%">
-      <Flex align="center" mb={4}>
-        <IconButton
-          icon={
-            isRecording ? (
-              <BsStopFill />
-            ) : (
-              <CircleIcon boxSize={8} color="red.500" />
-            )
-          }
-          onClick={handleRecord}
-        />
-        <IconButton ml={1} icon={<AiFillSave />} onClick={saveTranscript} />
+      <Flex align="start" direction={"column"} mb={4}>
+        <Flex mt={2} justify="start" flex={1} marginBottom={4}>
+          <Flex justify="start" align={"start"} flex={1} mr={8}>
+            <h2>Transcription</h2>
+          </Flex>
+          <Flex justify="center" align={"center"} flex={4}>
+            <IconButton
+              icon={
+                isRecording ? (
+                  <BsStopFill />
+                ) : (
+                  <CircleIcon boxSize={8} color="red.500" />
+                )
+              }
+              onClick={handleRecord}
+            />
+            <IconButton ml={4} icon={<AiFillSave />} onClick={saveTranscript} />
+            <Button width={80} ml={4} onClick={handleButtonClick} isLoading={isMinutesLoading}>
+                Create Meeting Minutes
+            </Button>
+          </Flex>
+        </Flex>
+        <h2>Translation</h2>
         <Textarea
           isDisabled={isTranslationLoading}
           placeholder={"Enter text here"}
-          value={text}
+          value={textAreaText}
           onChange={handleTextareaChange}
           flex={1}
           ml={4}
           mr={4}
+          mt={2}
         />
-        <Button onClick={handleTranslate} isLoading={isTranslationLoading}>
-          Translate
-        </Button>
       </Flex>
       <Box width="100%">
-        <Flex justify="space-between" align="center">
+        <Flex justify="space-between">
           <Flex justify="center" flex={1}>
+            <Button onClick={handleTranslate} isLoading={isTranslationLoading} mr={4}>
+              Translate
+            </Button>
             <IconButton icon={<BsFillPlayFill />} onClick={handleStart} />
             <IconButton ml={4} icon={<BsPauseFill />} onClick={handleStop} />
             <IconButton
@@ -375,9 +343,6 @@ const MainScreen = () => {
               onClick={handleRestart}
             />
           </Flex>
-          <Button onClick={handleButtonClick} isLoading={isMinutesLoading}>
-            Create Meeting Minutes
-          </Button>
           <IconButton
             ml={4}
             onClick={handleOpenSettings}
