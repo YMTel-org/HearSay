@@ -29,7 +29,7 @@ function createWindow(id, options) {
     // communicate between node-land and browser-land.
   });
 
-  window.setTitle(caps(id))
+  window.setTitle(caps(id));
 
   // In production, set the initial browser path to the local bundle generated
   // by the Create React App build process.
@@ -67,7 +67,6 @@ function setupLocalFilesNormalizerProxy() {
   );
 }
 
-
 // function to capitalize string
 function caps(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -83,7 +82,7 @@ app.whenReady().then(async () => {
     height: 300,
     width: 800,
     // uncomment when done with development
-    frame: true
+    frame: true,
   });
 
   createWindow("subtitles", {
@@ -93,7 +92,7 @@ app.whenReady().then(async () => {
     title: "Subtitles",
     alwaysOnTop: true,
     // useContentSize: true,
-    frame: true,
+    frame: false,
   });
   setupLocalFilesNormalizerProxy();
 
