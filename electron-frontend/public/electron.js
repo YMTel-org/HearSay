@@ -85,14 +85,13 @@ app.whenReady().then(async () => {
   });
 
   createWindow("subtitles", {
-    width: 450,
-    height: 10,
+    width: 500,
+    height: 500,
     minHeight: 10,
     title: "Subtitles",
     alwaysOnTop: true,
-    useContentSize: true,
-    // uncomment when done with development
-    frame: false,
+    // useContentSize: true,
+    frame: true,
   });
   setupLocalFilesNormalizerProxy();
 

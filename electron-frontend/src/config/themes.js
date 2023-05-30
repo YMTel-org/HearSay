@@ -15,7 +15,7 @@ export const appTheme = extendTheme({
       'h2': {
         fontSize: '20px',
         fontWeight: "bold",
-        color: props.colorMode === 'dark'? 'purple.300' : 'purple.600'
+        color: props.colorMode === 'dark'? 'purple.100' : 'purple.600'
       },
       'h1': {
         fontSize: '30px',

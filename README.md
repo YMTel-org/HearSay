@@ -1,5 +1,8 @@
 # MYTranslator
 
+![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/2c9cb32b-68e3-4b7c-959a-5286c6dc4d7c)
+
+
 Overcoming physical and communication barriers. MyTranslator is an offline app that aims to help overcome language barriers with live subtitles, live translation, replying in any language via
 text to speech and meeting minutes generation using quantized AI models such as whisper.cpp and a Llama based LLM model, Vicuna.
 
@@ -14,7 +17,7 @@ git clone https://github.com/YMTel-org/MYTranslator.git
 git clone https://github.com/YMTel-org/LocalAI.git
 ```
 
-2. In LocalAi, download the [LLM files](https://drive.google.com/file/d/1-GZFn1iHpu5JzUOivN3h372hspwTFdo-/view?usp=sharing) and the [Whisper files]() into the `/models` directory
+2. In LocalAi, download the [LLM files](https://drive.google.com/file/d/1-GZFn1iHpu5JzUOivN3h372hspwTFdo-/view?usp=sharing) and the [Whisper files](https://drive.google.com/file/d/1rgbS0bPlXe7Aa__z__1TCK1KxMThh5vA/view?usp=sharing) into the `/models` directory
 3. Ensure you have [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running, before entering the following command in the root directory of LocalAi:
 
 ```
@@ -33,3 +36,11 @@ Note: For online translation, you will need to generate your own Google Translat
 ```
 REACT_APP_TRANSLATE_API_KEY={YOUR_KEY_HERE}
 ```
+
+
+For Windows, navigate to Settings > Speech and download the following voice packages to your system.
+![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/f04cca57-6b06-4fb1-92d6-78c07bdb7751)
+
+
+
+
