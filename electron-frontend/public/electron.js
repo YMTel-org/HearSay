@@ -13,7 +13,6 @@ const {
 } = require("electron-shared-state-react/dist/main");
 
 const windows = new Set();
-let settings = {};
 
 // Create the native browser window.
 function createWindow(id, options) {
@@ -76,7 +75,7 @@ app.whenReady().then(async () => {
     height: 300,
     width: 800,
     // uncomment when done with development
-    frame: false
+    frame: true
   });
 
   createWindow("subtitles", {
