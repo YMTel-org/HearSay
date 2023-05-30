@@ -108,7 +108,7 @@ const MainScreen = () => {
   }
 
   const translateWithLLM = async (prompt) => {
-    setText("Loading... Please Wait...");
+    setTextAreaText("Loading... Please Wait...");
     setIsTranslationLoading(true);
     const response = await fetch("http://localhost:8080/v1/completions", {
       method: "POST",
@@ -117,7 +117,7 @@ const MainScreen = () => {
       },
       body: JSON.stringify({
         model: "vicuna",
-        prompt: `Translate the following into ${translateTo}: ${text}}`,
+        prompt: `Translate the following into ${translateTo}: ${prompt}}`,
       }),
     });
     if (!response.body) return;
@@ -131,32 +131,27 @@ const MainScreen = () => {
       console.log(parsed.choices[0].text);
       if (parsed.choices[0].text) {
         console.log(parsed.choices[0].text);
-        setText(parsed.choices[0].text);
+        setTextAreaText(parsed.choices[0].text);
       }
     }
     setIsTranslationLoading(false);
   };
 
   const translateOnline = async (prompt) => {
-    setText("Loading... Please Wait...");
+    setTextAreaText("Loading... Please Wait...");
     setIsTranslationLoading(true);
 
     const apiKey = process.env.REACT_APP_TRANSLATE_API_KEY;
 
     const url = `https://translation.googleapis.com/language/translate/v2?key=${apiKey}&q=${encodeURIComponent(
-      text
+      prompt
     )}&source=en&target=${LanguageToCode[translateTo]}&format=text&model=base`;
 
     const response = await fetch(url, {
       method: "POST",
     });
-
-    // const translatedText = await translate(text, {
-    //   to: LanguageToCode[translateTo],
-    //   fetchOptions: { agent },
-    // });
-    console.log(response);
-    // setText(translatedText);
+    const { data } = await response.json();
+    setTextAreaText(data.translations[0].translatedText);
     setIsTranslationLoading(false);
   };
   const [tFile, setTFile] = useState();
@@ -189,7 +184,7 @@ const MainScreen = () => {
     if (speechSynthesis.paused) {
       speechSynthesis.resume();
     } else if (!speechSynthesis.speaking) {
-      let speech = new SpeechSynthesisUtterance(text);
+      let speech = new SpeechSynthesisUtterance(textAreaText);
       console.log(getVoiceByURI(getVoiceURI()));
 
       speech.voice = getVoiceByURI(getVoiceURI()); // Set the language code based on the selected language
@@ -219,13 +214,14 @@ const MainScreen = () => {
   const handleRestart = async () => {
     console.log("Restart");
     speechSynthesis.cancel();
+    handleStart();
   };
 
   const handleTranslate = () => {
     if (isOffline) {
-      translateWithLLM(text);
+      translateWithLLM(textAreaText);
     } else {
-      translateOnline(text);
+      translateOnline(textAreaText);
     }
   };
 
@@ -255,7 +251,13 @@ const MainScreen = () => {
         // Initialize FormData and append the Blob audio data, model, language, and translate values
         var formData = new FormData();
         formData.append("file", blob, fileName);
-        formData.append("model", "whisper-base-en");
+
+        let model = "whisper-base-en";
+        if (language !== "en") {
+          model = "whisper-base";
+        }
+
+        formData.append("model", model);
         formData.append("language", "en");
         formData.append("translate", "true");
 
