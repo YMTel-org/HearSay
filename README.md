@@ -17,7 +17,7 @@ git clone https://github.com/YMTel-org/MYTranslator.git
 git clone https://github.com/YMTel-org/LocalAI.git
 ```
 
-2. In LocalAi, download the [LLM files](https://drive.google.com/file/d/1-GZFn1iHpu5JzUOivN3h372hspwTFdo-/view?usp=sharing) and the [Whisper files]() into the `/models` directory
+2. In LocalAi, download the [LLM files](https://drive.google.com/file/d/1-GZFn1iHpu5JzUOivN3h372hspwTFdo-/view?usp=sharing) and the [Whisper files](https://drive.google.com/file/d/1rgbS0bPlXe7Aa__z__1TCK1KxMThh5vA/view?usp=sharing) into the `/models` directory
 3. Ensure you have [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running, before entering the following command in the root directory of LocalAi:
 
 ```
