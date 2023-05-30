@@ -38,4 +38,9 @@ REACT_APP_TRANSLATE_API_KEY={YOUR_KEY_HERE}
 ```
 
 
+For Windows, navigate to Settings > Speech and download the following voice packages to your system.
+![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/f04cca57-6b06-4fb1-92d6-78c07bdb7751)
+
+
+
 
