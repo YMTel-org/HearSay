@@ -28,6 +28,7 @@ const MainScreen = () => {
   const [mediaRecorder, setMediaRecorder] = useState();
   const [theme, setTheme] = useGlobalState("theme", "light");
   const [language, setLanguage] = useGlobalState("language", "en");
+  const [transcript, setTranscript] = useGlobalState("transcript", "");
 
   const [translateTo, setTranslateTo] = useGlobalState(
     "translateTo",
@@ -206,7 +207,7 @@ const MainScreen = () => {
         // Initialize FormData and append the Blob audio data, model, language, and translate values
         var formData = new FormData();
         formData.append("file", blob, fileName);
-        formData.append("model", "whisper-1");
+        formData.append("model", "whisper-base-en");
         formData.append("language", "en");
         formData.append("translate", "true");
 
@@ -253,12 +254,17 @@ const MainScreen = () => {
     console.log(language);
   }, [theme, language]);
 
+  // when text changes
   useEffect(() => {
+    if (text) {
+      const newString = transcript.concat("\n").concat(text)
+      setTranscript(newString)
+    }
+
     if (text && tFile) {
       const appendedBlob = new Blob([tFile, "\n", text], {
         type: "text/plain",
       });
-      console.log(appendedBlob);
       setTFile(appendedBlob);
     }
   }, [text]);
