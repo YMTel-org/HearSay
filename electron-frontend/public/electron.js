@@ -29,6 +29,8 @@ function createWindow(id, options) {
     // communicate between node-land and browser-land.
   });
 
+  window.setTitle(caps(id))
+
   // In production, set the initial browser path to the local bundle generated
   // by the Create React App build process.
   // In development, set it to localhost to allow live/hot-reloading.
@@ -63,6 +65,12 @@ function setupLocalFilesNormalizerProxy() {
       if (error) console.error("Failed to register protocol");
     }
   );
+}
+
+
+// function to capitalize string
+function caps(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
 // This method will be called when Electron has finished its initialization and
