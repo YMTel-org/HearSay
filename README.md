@@ -119,7 +119,7 @@ Throughout the development process of our application, we have gained valuable i
 **Collaboration and Communication**: Building a complex application like ours required strong collaboration and effective communication within our team. We learned the significance of clear and concise communication, regular team meetings, and sharing progress updates. Collaborating on code repositories and managing version control improved our teamwork skills.
 
 
-## What's next for [YHApple] MYTranslator
+## What's next for HearSay
 **Enhanced Language Support**: We aim to expand the language support of our application, enabling users to communicate in a broader range of languages. This will involve integrating additional language models and improving the accuracy and performance of existing language translations.
 
 **Integration with External Services**: We plan to integrate our application with external services and platforms to offer additional functionality. This could include integration with popular communication tools, such as video conferencing platforms, to provide seamless live transcription and translation during meetings.
