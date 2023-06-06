@@ -3,10 +3,10 @@
 ![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/984ed78f-f8a1-4b18-929f-bb515fde6f80)
 > HearSay - Live subtitles, live translation, text to speech and meeting minutes generation
 
-![image_2023-05-30_11-47-50](https://github.com/YMTel-org/HearSay/assets/50147457/db500963-da86-4f4d-9295-2c88cd7bd421)
+![image_2023-05-30_11-47-50](https://github.com/YMTel-org/MYTranslator/assets/50147457/db500963-da86-4f4d-9295-2c88cd7bd421)
 > Generated meeting minutes
 
-![image_2023-05-30_11-41-21](https://github.com/YMTel-org/HearSay/assets/50147457/97290cdb-3008-4d0d-af9a-c75d864cd74c)
+![image_2023-05-30_11-41-21](https://github.com/YMTel-org/MYTranslator/assets/50147457/97290cdb-3008-4d0d-af9a-c75d864cd74c)
 > Light/Dark Mode
 
 
