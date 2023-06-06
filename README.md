@@ -1,26 +1,26 @@
 # HearSay
 
 ![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/984ed78f-f8a1-4b18-929f-bb515fde6f80)
-> MYTranslator - Live subtitles, live translation, text to speech and meeting minutes generation
+> HearSay - Live subtitles, live translation, text to speech and meeting minutes generation
 
-![image_2023-05-30_11-47-50](https://github.com/YMTel-org/MYTranslator/assets/50147457/db500963-da86-4f4d-9295-2c88cd7bd421)
+![image_2023-05-30_11-47-50](https://github.com/YMTel-org/HearSay/assets/50147457/db500963-da86-4f4d-9295-2c88cd7bd421)
 > Generated meeting minutes
 
-![image_2023-05-30_11-41-21](https://github.com/YMTel-org/MYTranslator/assets/50147457/97290cdb-3008-4d0d-af9a-c75d864cd74c)
+![image_2023-05-30_11-41-21](https://github.com/YMTel-org/HearSay/assets/50147457/97290cdb-3008-4d0d-af9a-c75d864cd74c)
 > Light/Dark Mode
 
 
-Overcoming physical and communication barriers. MyTranslator is an offline app that aims to help overcome language barriers with live subtitles, live translation, replying in any language via
+Overcoming physical and communication barriers. HearSay is an offline app that aims to help overcome language barriers with live subtitles, live translation, replying in any language via
 text to speech and meeting minutes generation using quantized AI models such as whisper.cpp and a Llama based LLM model, Vicuna.
 
 Everything being offline helps ensure that all information is kept private and will not be shared with anyone. Online options are also offered for users who prefer faster translation speeds.
 
-To setup MYTranslator on your local device, follow thesse steps:
+To setup HearSay on your local device, follow thesse steps:
 
 1. Git clone [HearSay](https://github.com/YMTel-org/HearSay) and [LocalAI](https://github.com/YMTel-org/LocalAI)
 
 ```
-git clone https://github.com/YMTel-org/MYTranslator.git
+git clone https://github.com/YMTel-org/HearSay.git
 git clone https://github.com/YMTel-org/LocalAI.git
 ```
 
@@ -31,14 +31,14 @@ git clone https://github.com/YMTel-org/LocalAI.git
 docker-compose up -d --build
 ```
 
-4. From the root directory of MYTranslator, navigage to `/electron-frontend` and run the electron client with:
+4. From the root directory of HearSay, navigage to `/electron-frontend` and run the electron client with:
 
 ```
 cd electron-frontend/
 yarn electron:start
 ```
 
-Note: For online translation, you will need to generate your own Google Translate API key. Follow [this guide](https://support.cloudapplications.jp/faq/4329/?lang=en) to do so. Then, create a `.env` file in the root of MYTranslator with the following content:
+Note: For online translation, you will need to generate your own Google Translate API key. Follow [this guide](https://support.cloudapplications.jp/faq/4329/?lang=en) to do so. Then, create a `.env` file in the root of HearSay with the following content:
 
 ```
 REACT_APP_TRANSLATE_API_KEY={YOUR_KEY_HERE}
@@ -62,11 +62,11 @@ During our experiences working at MNCs, we also noticed that many professionals 
 Inspired by meeting struggles, we envisioned an app to bridge this communication barrier across different languages and cultures. We wish to empower individuals, businesses, and organizations to communicate effortlessly, opening doors to new opportunities and fostering global understanding.
 
 ## What it does
-MYTranslator harnesses the power of State-of-the-Art Large Language Models (LLMs) to revolutionize communication. With real-time translation capabilities, it enables seamless understanding by providing live translations and transcriptions during conversations. The text-to-speech feature ensures that users can communicate verbally, regardless of language barriers.
+HearSay harnesses the power of State-of-the-Art Large Language Models (LLMs) to revolutionize communication. With real-time translation capabilities, it enables seamless understanding by providing live translations and transcriptions during conversations. The text-to-speech feature ensures that users can communicate verbally, regardless of language barriers.
 
 Moreover, our application offers the ability to generate meeting minutes, saving time and effort for participants. By leveraging the advanced capabilities of LLMs, it can summarize key points and important discussions, allowing users to quickly review and capture the essence of the meeting.
 
-MYTranslator offers both online and offline modes. The offline capability provides users with peace of mind, knowing that their conversations and translations are not being transmitted or stored on external servers. This is particularly important for individuals and organizations that deal with confidential or sensitive information, such as business negotiations, legal discussions, or personal conversations.
+HearSay offers both online and offline modes. The offline capability provides users with peace of mind, knowing that their conversations and translations are not being transmitted or stored on external servers. This is particularly important for individuals and organizations that deal with confidential or sensitive information, such as business negotiations, legal discussions, or personal conversations.
 
 However, we understand that some users may prioritize faster translation speeds and may be willing to trade off a certain level of privacy for the convenience of online translation services. To cater to these preferences, we also offer online options that leverage cloud-based services to provide faster translation capabilities.
 
