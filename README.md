@@ -1,4 +1,4 @@
-# MYTranslator
+# HearSay
 
 ![image](https://github.com/YMTel-org/MYTranslator/assets/50147457/984ed78f-f8a1-4b18-929f-bb515fde6f80)
 > MYTranslator - Live subtitles, live translation, text to speech and meeting minutes generation
@@ -17,7 +17,7 @@ Everything being offline helps ensure that all information is kept private and w
 
 To setup MYTranslator on your local device, follow thesse steps:
 
-1. Git clone [MYTranslator](https://github.com/YMTel-org/MYTranslator) and [LocalAI](https://github.com/YMTel-org/LocalAI)
+1. Git clone [HearSay](https://github.com/YMTel-org/HearSay) and [LocalAI](https://github.com/YMTel-org/LocalAI)
 
 ```
 git clone https://github.com/YMTel-org/MYTranslator.git
